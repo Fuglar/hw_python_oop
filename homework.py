@@ -1,3 +1,6 @@
+from typing import Dict, List
+
+
 class InfoMessage:
     """Информационное сообщение о тренировке."""
     def __init__(self,
@@ -25,7 +28,7 @@ class Training:
     """Базовый класс тренировки."""
     LEN_STEP: float = 0.65
     M_IN_KM: int = 1000
-    COEF_CONVERT_TIME: int = 60
+    CONVERT_TIME_HOURS_IN_MINUTE: int = 60
 
     def __init__(self, action: int, duration: float, weight: float) -> None:
         self.action = action
@@ -42,7 +45,6 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-    pass
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -59,13 +61,10 @@ class Running(Training):
     COEF_18: int = 18
     COEF_20: int = 20
 
-    def __init__(self, action: int, duration: float, weight: float) -> None:
-        super().__init__(action, duration, weight)
-
     def get_spent_calories(self) -> float:
         return ((self.COEF_18 * self.get_mean_speed() - self.COEF_20)
                 * self.weight / self.M_IN_KM * self.duration
-                * self.COEF_CONVERT_TIME)
+                * self.CONVERT_TIME_HOURS_IN_MINUTE)
 
 
 class SportsWalking(Training):
@@ -86,7 +85,7 @@ class SportsWalking(Training):
         return ((self.COEF_00_35 * self.weight
                 + (self.get_mean_speed()**2 // self.height)
                 * self.COEF_00_29 * self.weight)
-                * (self.duration * self.COEF_CONVERT_TIME))
+                * (self.duration * self.CONVERT_TIME_HOURS_IN_MINUTE))
 
 
 class Swimming(Training):
@@ -115,16 +114,18 @@ class Swimming(Training):
                 * self.COEF_2 * self.weight)
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: List) -> Training:
+    # Тут я так понимаю всё нормально, data является списком чисел
     """Прочитать данные полученные от датчиков."""
-    if workout_type == 'SWM':
-        return Swimming(*data)
-    if workout_type == 'RUN':
-        return Running(*data)
-    if workout_type == 'WLK':
-        return SportsWalking(*data)
+    reader_info_training: Dict[str, Training] = {'SWM': Swimming,
+                                                 'RUN': Running,
+                                                 'WLK': SportsWalking
+                                                 }
+    # Ключ является типом str, значение является подклассом
+    if reader_info_training.keys() == 'SWM' or 'RUN' or 'WLK':
+        return reader_info_training[workout_type](*data)
     else:
-        print('Неверный ввод')
+        print('Неизвестный вид тренировки')
 
 
 def main(training: Training) -> None:
