@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List, Type, Dict
 
 
 class InfoMessage:
@@ -114,18 +114,19 @@ class Swimming(Training):
                 * self.COEF_2 * self.weight)
 
 
-def read_package(workout_type: str, data: List) -> Training:
-    # Тут я так понимаю всё нормально, data является списком чисел
+def read_package(workout_type: str, data: List[int]) -> Training:
+    # Data это список List с цифрами типа int
     """Прочитать данные полученные от датчиков."""
-    reader_info_training: Dict[str, Training] = {'SWM': Swimming,
-                                                 'RUN': Running,
-                                                 'WLK': SportsWalking
-                                                 }
+    reader_info_training: Dict[str, Type[Training]] = {'SWM': Swimming,
+                                                       'RUN': Running,
+                                                       'WLK': SportsWalking
+                                                       }
     # Ключ является типом str, значение является подклассом
-    if reader_info_training.keys() == 'SWM' or 'RUN' or 'WLK':
+    if workout_type in reader_info_training:
         return reader_info_training[workout_type](*data)
     else:
         print('Неизвестный вид тренировки')
+        assert False
 
 
 def main(training: Training) -> None:
@@ -143,4 +144,7 @@ if __name__ == '__main__':
 
     for workout_type, data in packages:
         training = read_package(workout_type, data)
-        main(training)
+        if type(training) is None:
+            print('Функция read_package возвращает None')
+        else:
+            main(training)
