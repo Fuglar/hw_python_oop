@@ -115,18 +115,17 @@ class Swimming(Training):
 
 
 def read_package(workout_type: str, data: List[int]) -> Training:
-    # Data это список List с цифрами типа int
     """Прочитать данные полученные от датчиков."""
     reader_info_training: Dict[str, Type[Training]] = {'SWM': Swimming,
                                                        'RUN': Running,
                                                        'WLK': SportsWalking
                                                        }
-    # Ключ является типом str, значение является подклассом
-    if workout_type in reader_info_training:
-        return reader_info_training[workout_type](*data)
+    try:
+        train = reader_info_training[workout_type](*data)
+    except ValueError:
+        raise ValueError('Неизвестный вид тренировки')
     else:
-        print('Неизвестный вид тренировки')
-        assert False
+        return train
 
 
 def main(training: Training) -> None:
@@ -145,6 +144,6 @@ if __name__ == '__main__':
     for workout_type, data in packages:
         training = read_package(workout_type, data)
         if type(training) is None:
-            print('Функция read_package возвращает None')
+            print(f'Введён неизвестный тип тренировки. Доступные виды тренировок: {workout_type}')
         else:
             main(training)
