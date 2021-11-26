@@ -144,6 +144,6 @@ if __name__ == '__main__':
     for workout_type, data in packages:
         training = read_package(workout_type, data)
         if type(training) is None:
-            print(f'Введён неизвестный тип тренировки. Доступные виды тренировок: {workout_type}')
+            print(f'Введён неизвестный тип тренировки.Виды тренировок: {workout_type}')
         else:
             main(training)
