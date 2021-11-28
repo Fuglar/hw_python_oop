@@ -123,7 +123,10 @@ def read_package(workout_type: str, data: List[int]) -> Training:
     try:
         train = reader_info_training[workout_type](*data)
     except ValueError:
-        raise ValueError('Неизвестный вид тренировки')
+        raise ValueError(f'Неизвестный вид тренировки.'
+                         f'Известные виды тренировок:'
+                         f'{reader_info_training.keys()}'
+                         )
     else:
         return train
 
@@ -143,8 +146,4 @@ if __name__ == '__main__':
 
     for workout_type, data in packages:
         training = read_package(workout_type, data)
-        if type(training) is None:
-            print(f'Введён неизвестный тип тренировки.'
-                  f'Виды тренировок: {workout_type}')
-        else:
-            main(training)
+        main(training)
